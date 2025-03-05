@@ -1,0 +1,14 @@
+.settingsDiv {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.label {
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.input {
+    margin-bottom: 1em;
+}
