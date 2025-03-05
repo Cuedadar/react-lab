@@ -1,20 +1,31 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {useEffect, useState} from 'react'
 import './App.css'
 import GameSettings from './GameSettings.jsx'
 
 function App() {
-  const [count, setCount] = useState(0);
   const [gamePrefs, setGamePrefs] = useState({
-      firstName: "",
-      selectedCategories: [""],
-      selectedDifficulty: ""
+      selectedDifficulty: "easy",
+      selectedCategoryID: 0,
+      firstName: ""
   });
+
+  const [prefsChosen, setPrefsChosen] = useState(false);
+
+  function handlePrefsChosen(prefs) {
+      setGamePrefs(prefs);
+      setPrefsChosen(true);
+  }
 
   return (
     <>
-        <GameSettings gamePrefs={gamePrefs} setGamePrefs={setGamePrefs} />
+        {!prefsChosen && (
+        <>
+        <GameSettings gamePrefs={{firstName: gamePrefs.firstName, selectedCategoryID: gamePrefs.selectedCategoryID,
+            selectedDifficulty: gamePrefs.selectedDifficulty}} setGamePrefs={handlePrefsChosen} />
+        <p>GamePrefs are name={gamePrefs.firstName} difficulty={gamePrefs.selectedDifficulty} and the
+        categoryID={gamePrefs.selectedCategoryID}</p>
+        </>
+        )}
     </>
   )
 }

@@ -11,4 +11,6 @@
 
 .input {
     margin-bottom: 1em;
+    height:2rem;
+    border-radius: 8px;
 }

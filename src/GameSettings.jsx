@@ -1,20 +1,18 @@
 import {useState, useEffect} from "react";
+import availableDifficults from "./Constants.js";
 import styles from './GameSettings.module.css';
+import PropTypes from 'prop-types';
 
 function GameSettings(props) {
 
-    /* Constants and States */
-    const availableDifficulties = ["Easy", "Medium", "Hard"];
+    /*  States */
     let [availableCategories, setAvailableCategories] = useState([{
         id: 0,
         name: "All Categories"
     }]);
     let [fetchError, setFetchError] = useState(false);
-    let [gamePrefs, setGamePrefs] = useState({
-        selectedDifficulty: "easy",
-        selectedCategoryID: 0,
-        firstName: ""
-    });
+
+    let [gamePrefs, setGamePrefs] = useState();
 
     async function fetchCategories() {
         try {
@@ -31,7 +29,7 @@ function GameSettings(props) {
     /* Preferences Form Methods */
     function handleCategoryChange(event)
     {   console.log(event.target.value);
-        setGamePrefs({...gamePrefs, selectedCategoryID: event.target.value.id});
+        setGamePrefs({...gamePrefs, selectedCategoryID: event.target.value});
     }
 
     function handleDifficultyChange(event) {
@@ -44,8 +42,11 @@ function GameSettings(props) {
         setGamePrefs({...gamePrefs, firstName: event.target.value});
     }
 
-    async function handleSubmit(event) {
-
+    function handleSubmit(event) {
+        event.preventDefault();
+        console.log("Submitting");
+        // Using callback function
+        props.setGamePrefs(gamePrefs);
     }
 
     /* Call methods on First Render */
@@ -60,7 +61,8 @@ function GameSettings(props) {
                    placeholder="Jane Doe" onChange={handleFirstNameChange}/>
 
             <select className={styles.input} name="categories" id="categories"
-                    onChange={handleCategoryChange}>
+                    onChange={handleCategoryChange}
+                    defaultValue={props.selectedCategoryID}>
                 {availableCategories.map((category) => (
                     <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
@@ -68,13 +70,22 @@ function GameSettings(props) {
 
             <select className={styles.input} name="difficulty" id="difficulty"
                     onChange={handleDifficultyChange}>
-                {availableDifficulties.map((difficulty, index) => (
+                {availableDifficults.map((difficulty, index) => (
                     <option key={index} value={difficulty}>{difficulty}</option>
                 ))}
             </select>
-        {/*    Select  / Option(value)*/}
+            <button onClick={handleSubmit}>Submit</button>
         </form>
     );
+}
+
+GameSettings.propTypes = {
+    gamePrefs: PropTypes.shape({
+        selectedDifficulty: PropTypes.string,
+        selectedCategoryID: PropTypes.number,
+        firstName: PropTypes.string
+    }),
+    setGamePrefs: Function
 }
 
 export default GameSettings;
