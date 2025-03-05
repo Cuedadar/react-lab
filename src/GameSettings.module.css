@@ -9,6 +9,25 @@
     margin-bottom: 3px;
 }
 
+.nameSection {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1em;
+    padding: 0;
+}
+
+.nameInput {
+    height:2rem;
+    border-radius: 8px;
+}
+
+.errorLabel {
+    color: red;
+    margin-top: 3px;
+    margin-bottom: 0px;
+    font-weight: bold;
+}
+
 .input {
     margin-bottom: 1em;
     height:2rem;

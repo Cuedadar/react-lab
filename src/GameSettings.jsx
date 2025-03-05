@@ -1,18 +1,22 @@
 import {useState, useEffect} from "react";
-import availableDifficults from "./Constants.js";
 import styles from './GameSettings.module.css';
 import PropTypes from 'prop-types';
+import Constants from "./Constants.js";
 
 function GameSettings(props) {
 
     /*  States */
-    let [availableCategories, setAvailableCategories] = useState([{
+    const [availableCategories, setAvailableCategories] = useState([{
         id: 0,
         name: "All Categories"
     }]);
-    const [fetchError, setFetchError] = useState(false);
 
-    const [gamePrefs, setGamePrefs] = useState();
+    const [errors, setErrors] = useState({
+        fetchError: false,
+        firstNameError: false
+    });
+
+    const [gamePrefs, setGamePrefs] = useState({...props.gamePrefs});
 
     async function fetchCategories() {
         try {
@@ -20,32 +24,34 @@ function GameSettings(props) {
                 fetch(`https://opentdb.com/api_category.php`)).json();
             setAvailableCategories(Array.prototype.concat(availableCategories,
                 availableCategoriesJSON.trivia_categories));
-            setFetchError(false);
+            setErrors({...errors, fetchError: false});
         } catch (error) {
             // Display error with Categories
-            setFetchError(true);
+            setErrors({...errors, fetchError: true});
         }
     }
 
     /* Preferences Form Methods */
     function handleCategoryChange(event) {
-        console.log(event.target.value);
         setGamePrefs({...gamePrefs, selectedCategoryID: event.target.value});
     }
 
     function handleDifficultyChange(event) {
-        console.log(event.target.value.toLowerCase());
-        setGamePrefs({...gamePrefs, selectedDifficulty: event.target.value});
+        setGamePrefs({...gamePrefs, selectedDifficulty: event.target.value.toLowerCase()});
     }
 
     function handleFirstNameChange(event) {
-        console.log(event.target.value);
         setGamePrefs({...gamePrefs, firstName: event.target.value});
+        event.target.value === "" ? setErrors({...errors, firstNameError: true}) :
+            setErrors({...errors, firstNameError: false});
     }
 
     function handleSubmit(event) {
         event.preventDefault();
-        console.log("Submitting");
+        if(gamePrefs.firstName === "") {
+            setErrors({...errors, firstNameError: true});
+            return;
+        }
         // Using callback function
         props.setGamePrefs(gamePrefs);
     }
@@ -58,14 +64,20 @@ function GameSettings(props) {
     return (
 
         <>
-            {fetchError && (
+            {errors.fetchError && (
                 <button className={styles.buttonError} onClick={fetchCategories}>Failed to load Categories. Retry?</button>
             )}
 
             <form className={styles.settingsDiv} onSubmit={handleSubmit}>
-                <label htmlFor="firstName" className={styles.label}>First Name</label>
-                <input className={styles.input} type="text" id="firstName" name="firstName"
-                       placeholder="Jane Doe" onChange={handleFirstNameChange} required/>
+                <div className={styles.nameSection}>
+                    <label htmlFor="firstName" className={styles.label}>First Name</label>
+                    <input className={styles.nameInput} type="text" id="firstName" name="firstName"
+                           placeholder="Jane Doe" onChange={handleFirstNameChange} />
+
+                    {errors.firstNameError && (
+                        <p className={styles.errorLabel}>Name is required</p>
+                    )}
+                </div>
 
                 <select className={styles.input} name="categories" id="categories"
                         onChange={handleCategoryChange}
@@ -77,7 +89,7 @@ function GameSettings(props) {
 
                 <select className={styles.input} name="difficulty" id="difficulty"
                         onChange={handleDifficultyChange}>
-                    {availableDifficults.map((difficulty, index) => (
+                    {Constants.availableDifficults.map((difficulty, index) => (
                         <option key={index} value={difficulty}>{difficulty}</option>
                     ))}
                 </select>
