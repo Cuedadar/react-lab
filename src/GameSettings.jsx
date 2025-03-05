@@ -10,9 +10,9 @@ function GameSettings(props) {
         id: 0,
         name: "All Categories"
     }]);
-    let [fetchError, setFetchError] = useState(false);
+    const [fetchError, setFetchError] = useState(false);
 
-    let [gamePrefs, setGamePrefs] = useState();
+    const [gamePrefs, setGamePrefs] = useState();
 
     async function fetchCategories() {
         try {
@@ -20,6 +20,7 @@ function GameSettings(props) {
                 fetch(`https://opentdb.com/api_category.php`)).json();
             setAvailableCategories(Array.prototype.concat(availableCategories,
                 availableCategoriesJSON.trivia_categories));
+            setFetchError(false);
         } catch (error) {
             // Display error with Categories
             setFetchError(true);
@@ -27,8 +28,8 @@ function GameSettings(props) {
     }
 
     /* Preferences Form Methods */
-    function handleCategoryChange(event)
-    {   console.log(event.target.value);
+    function handleCategoryChange(event) {
+        console.log(event.target.value);
         setGamePrefs({...gamePrefs, selectedCategoryID: event.target.value});
     }
 
@@ -55,27 +56,34 @@ function GameSettings(props) {
     }, []);
 
     return (
-        <form className={styles.settingsDiv}>
-            <label htmlFor="firstName" className={styles.label}>First Name</label>
-            <input className={styles.input} type="text" id="firstName" name="firstName"
-                   placeholder="Jane Doe" onChange={handleFirstNameChange}/>
 
-            <select className={styles.input} name="categories" id="categories"
-                    onChange={handleCategoryChange}
-                    defaultValue={props.selectedCategoryID}>
-                {availableCategories.map((category) => (
-                    <option key={category.id} value={category.id}>{category.name}</option>
-                ))}
-            </select>
+        <>
+            {fetchError && (
+                <button className={styles.buttonError} onClick={fetchCategories}>Failed to load Categories. Retry?</button>
+            )}
 
-            <select className={styles.input} name="difficulty" id="difficulty"
-                    onChange={handleDifficultyChange}>
-                {availableDifficults.map((difficulty, index) => (
-                    <option key={index} value={difficulty}>{difficulty}</option>
-                ))}
-            </select>
-            <button onClick={handleSubmit}>Submit</button>
-        </form>
+            <form className={styles.settingsDiv} onSubmit={handleSubmit}>
+                <label htmlFor="firstName" className={styles.label}>First Name</label>
+                <input className={styles.input} type="text" id="firstName" name="firstName"
+                       placeholder="Jane Doe" onChange={handleFirstNameChange} required/>
+
+                <select className={styles.input} name="categories" id="categories"
+                        onChange={handleCategoryChange}
+                        defaultValue={props.selectedCategoryID}>
+                    {availableCategories.map((category) => (
+                        <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                </select>
+
+                <select className={styles.input} name="difficulty" id="difficulty"
+                        onChange={handleDifficultyChange}>
+                    {availableDifficults.map((difficulty, index) => (
+                        <option key={index} value={difficulty}>{difficulty}</option>
+                    ))}
+                </select>
+                <button type={"submit"}>Submit</button>
+            </form>
+        </>
     );
 }
 
