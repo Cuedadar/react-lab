@@ -3,8 +3,6 @@
 
 const Constants = {
     availableDifficulties : ["Easy", "Medium", "Hard"],
-    // Generated Method - Why doesn't this exist natively???
-    unescapeHTML: (text) =>(text || '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'")
 }
 
 export default Constants;

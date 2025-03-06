@@ -1,6 +1,5 @@
 import {useState, useEffect, useRef} from "react";
 import PropTypes from 'prop-types';
-import Constants from "../Constants.js";
 
 function Game(props) {
     const [questionInfo, setQuestionInfo] = useState({
@@ -10,7 +9,7 @@ function Game(props) {
     });
 
     const shouldFetchQuestion = useRef(true);
-    
+
     const [fetchError, setFetchError] = useState(false);
     const [selectedAnswer, setSelectedAnswer] = useState("");
 
