@@ -1,25 +1,37 @@
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import './App.css'
 import GameSettings from './components/GameSettings.jsx'
 import Game from './components/Game.jsx'
+import GameResults from "./components/GameResults.jsx";
 
 function App() {
 
     const [gamePrefs, setGamePrefs] = useState();
+    const [gameResults, setGameResults] = useState();
 
-    // Unnecessary as long as it's just passing along this one method.
-    //  Leaving it as is to add logging if necessary
     async function handlePrefsChosen(prefs) {
         setGamePrefs(prefs);
     }
 
+    async function handleResults(results) {
+        setGameResults(results);
+    }
+
+    async function handlePlayAgain() {
+        setGamePrefs(null);
+        setGameResults(null);
+    }
+
     return (
         <>
-            <GameSettings startGameCallback={handlePrefsChosen}/>
-            {gamePrefs && (
-                <>
-                    <Game gamePrefs={gamePrefs}/>
-                </>
+            {!gamePrefs && !gameResults && (
+                <GameSettings startGameCallback={handlePrefsChosen}/>
+            )}
+            {gamePrefs && !gameResults && (
+                <Game gamePrefs={gamePrefs} gameResultsCallback={handleResults}/>
+            )}
+            {gameResults && (
+                <GameResults playAgainCallback={handlePlayAgain} gameResults={gameResults}/>
             )}
         </>
     )

@@ -26,7 +26,6 @@ function GameSettings(props) {
     async function fetchCategories() {
         if (shouldFetchCategories.current) {
             shouldFetchCategories.current = false;
-            console.log("Fetching Categories");
             try {
                 const availableCategoriesJSON = await (await
                     fetch(`https://opentdb.com/api_category.php`)).json();

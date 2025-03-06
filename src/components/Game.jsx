@@ -1,7 +1,6 @@
 import {useState, useEffect, useRef} from "react";
 import PropTypes from 'prop-types';
 import Constants from "../Constants.js";
-import GameSettings from "./GameSettings.jsx";
 
 function Game(props) {
     const [questionInfo, setQuestionInfo] = useState({
@@ -10,22 +9,29 @@ function Game(props) {
         correctAnswer: ""
     });
 
-    const [fetchError, setFetchError] = useState(false);
     const shouldFetchQuestion = useRef(true);
+    
+    const [fetchError, setFetchError] = useState(false);
+    const [selectedAnswer, setSelectedAnswer] = useState("");
 
-    // Load question(s) before game to allow preference changes before reload
-    // if call fails.
     async function loadQuestion() {
-        if(shouldFetchQuestion.current) {
+        if (shouldFetchQuestion.current) {
             shouldFetchQuestion.current = false;
             const requestUrl = `https://opentdb.com/api.php?amount=1&category=${props.gamePrefs.selectedCategoryID}&difficulty=${props.gamePrefs.selectedDifficulty}&type=multiple`;
             try {
                 const response = await ((await fetch(requestUrl)).json());
-                console.log(response);
+                let rawAnswers = [response.results[0]["correct_answer"], ...response.results[0]["incorrect_answers"]];
+
+                // Shuffle the array (simply. This is small.) so the correct answer appears in different
+                //  locations
+                let answers = rawAnswers.map(answer => ({answer, sort: Math.random()}))
+                    .sort((a, b) => a.sort - b.sort)
+                    .map(({answer}) => answer);
+
                 setQuestionInfo({
-                    question: Constants.unescapeHTML(response.results[0]["question"]),
-                    answers: [response.results[0]["correct_answer"], ...response.results[0]["incorrect_answers"]],
-                    correctAnswer: Constants.unescapeHTML(response.results[0]["correct_answer"])
+                    question: response.results[0]["question"],
+                    answers: answers,
+                    correctAnswer: response.results[0]["correct_answer"]
                 });
                 setFetchError(false);
             } catch (error) {
@@ -34,12 +40,32 @@ function Game(props) {
         }
     }
 
+    function handleAnswerChange(event) {
+        setSelectedAnswer(event.target.value);
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        if (selectedAnswer === questionInfo.correctAnswer) {
+            props.gameResultsCallback({
+                isCorrect: true,
+                name: props.gamePrefs.firstName
+            });
+        } else {
+            props.gameResultsCallback({
+                isCorrect: false,
+                name: props.gamePrefs.firstName
+            });
+        }
+    }
+
     useEffect(() => {
         loadQuestion();
     }, []);
 
     return (
-        <div>
+        <div style={{display: "flex", flexDirection:"column", alignItems: "center"}}>
             {
                 fetchError && (
                     <button onClick={() => {
@@ -48,10 +74,15 @@ function Game(props) {
                     }}>Failed to load question. Retry?</button>
                 )
             }
-            <span><h1>Question:</h1><p>{questionInfo.question}</p></span>
-            {questionInfo.answers.map((answer, index) => (
-                <span key={index}><h1>{index + 1}:</h1><p>{answer}</p></span>
-            ))}
+            <div><h1>Question:</h1><p dangerouslySetInnerHTML={{__html: questionInfo.question}}></p></div>
+            <form style={{display: "flex", flexDirection: "column"}}>
+                {questionInfo.answers.map((answer, index) => (
+                    <span style={{alignItems: "center", textAlign: "left"}} key={index}>
+                        <input type="radio" name="answerRadio" id="answerRadio" value={answer} onChange={handleAnswerChange} key={index} />
+                        <label htmlFor={"answerRadio" + index} style={{marginLeft: "10px"}} dangerouslySetInnerHTML={{__html: answer}} />
+                    </span>))}
+                <button style={{marginTop: "2em"}} type={"submit"} onClick={handleSubmit}>Submit</button>
+            </form>
         </div>
     );
 }
@@ -61,7 +92,8 @@ Game.propTypes = {
         selectedDifficulty: PropTypes.string,
         selectedCategoryID: PropTypes.number,
         firstName: PropTypes.string
-    })
+    }),
+    gameResultsCallback: Function
 }
 
 export default Game;
