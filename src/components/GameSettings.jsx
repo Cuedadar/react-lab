@@ -1,7 +1,7 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import styles from './GameSettings.module.css';
 import PropTypes from 'prop-types';
-import Constants from "./Constants.js";
+import Constants from "../Constants.js";
 
 function GameSettings(props) {
 
@@ -16,18 +16,28 @@ function GameSettings(props) {
         firstNameError: false
     });
 
-    const [gamePrefs, setGamePrefs] = useState({...props.gamePrefs});
+    const [gamePrefs, setGamePrefs] = useState({
+        firstName: "",
+        selectedCategoryID: "0",
+        selectedDifficulty: "easy"
+    });
+
+    const shouldFetchCategories = useRef(true);
 
     async function fetchCategories() {
-        try {
-            const availableCategoriesJSON = await (await
-                fetch(`https://opentdb.com/api_category.php`)).json();
-            setAvailableCategories(Array.prototype.concat(availableCategories,
-                availableCategoriesJSON.trivia_categories));
-            setErrors({...errors, fetchError: false});
-        } catch (error) {
-            // Display error with Categories
-            setErrors({...errors, fetchError: true});
+        if (shouldFetchCategories.current) {
+            shouldFetchCategories.current = false;
+            console.log("Fetching Categories");
+            try {
+                const availableCategoriesJSON = await (await
+                    fetch(`https://opentdb.com/api_category.php`)).json();
+                setAvailableCategories(Array.prototype.concat(availableCategories,
+                    availableCategoriesJSON.trivia_categories));
+                setErrors({...errors, fetchError: false});
+            } catch (error) {
+                // Display error with Categories
+                setErrors({...errors, fetchError: true});
+            }
         }
     }
 
@@ -48,12 +58,12 @@ function GameSettings(props) {
 
     function handleSubmit(event) {
         event.preventDefault();
-        if(gamePrefs.firstName === "") {
+        if (gamePrefs.firstName === "") {
             setErrors({...errors, firstNameError: true});
             return;
         }
         // Using callback function
-        props.setGamePrefs(gamePrefs);
+        props.startGameCallback(gamePrefs);
     }
 
     /* Call methods on First Render */
@@ -65,14 +75,18 @@ function GameSettings(props) {
 
         <>
             {errors.fetchError && (
-                <button className={styles.buttonError} onClick={fetchCategories}>Failed to load Categories. Retry?</button>
+                <button className={styles.buttonError} onClick={() => {
+                    shouldFetchCategories.current = true;
+                    fetchCategories();
+                }}>Failed to load Categories.
+                    Retry?</button>
             )}
 
             <form className={styles.settingsDiv} onSubmit={handleSubmit}>
                 <div className={styles.nameSection}>
                     <label htmlFor="firstName" className={styles.label}>First Name</label>
                     <input className={styles.nameInput} type="text" id="firstName" name="firstName"
-                           placeholder="Jane Doe" onChange={handleFirstNameChange} />
+                           placeholder="Jane Doe" onChange={handleFirstNameChange}/>
 
                     {errors.firstNameError && (
                         <p className={styles.errorLabel}>Name is required</p>
@@ -81,7 +95,7 @@ function GameSettings(props) {
 
                 <select className={styles.input} name="categories" id="categories"
                         onChange={handleCategoryChange}
-                        defaultValue={props.selectedCategoryID}>
+                        defaultValue="0">
                     {availableCategories.map((category) => (
                         <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
@@ -89,7 +103,7 @@ function GameSettings(props) {
 
                 <select className={styles.input} name="difficulty" id="difficulty"
                         onChange={handleDifficultyChange}>
-                    {Constants.availableDifficults.map((difficulty, index) => (
+                    {Constants.availableDifficulties.map((difficulty, index) => (
                         <option key={index} value={difficulty}>{difficulty}</option>
                     ))}
                 </select>
@@ -105,7 +119,7 @@ GameSettings.propTypes = {
         selectedCategoryID: PropTypes.number,
         firstName: PropTypes.string
     }),
-    setGamePrefs: Function
+    startGameCallback: Function
 }
 
 export default GameSettings;
