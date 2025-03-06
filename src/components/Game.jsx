@@ -9,9 +9,8 @@ function Game(props) {
         answers: [],
         correctAnswer: ""
     });
-    const [gamePrefs] = useState({...props.gamePrefs});
-    const [fetchError, setFetchError] = useState(false);
 
+    const [fetchError, setFetchError] = useState(false);
     const shouldFetchQuestion = useRef(true);
 
     // Load question(s) before game to allow preference changes before reload
@@ -19,7 +18,7 @@ function Game(props) {
     async function loadQuestion() {
         if(shouldFetchQuestion.current) {
             shouldFetchQuestion.current = false;
-            const requestUrl = `https://opentdb.com/api.php?amount=1&category=${gamePrefs.selectedCategoryID}&difficulty=${gamePrefs.selectedDifficulty}&type=multiple`;
+            const requestUrl = `https://opentdb.com/api.php?amount=1&category=${props.gamePrefs.selectedCategoryID}&difficulty=${props.gamePrefs.selectedDifficulty}&type=multiple`;
             try {
                 const response = await ((await fetch(requestUrl)).json());
                 console.log(response);
@@ -57,13 +56,12 @@ function Game(props) {
     );
 }
 
-GameSettings.propTypes = {
+Game.propTypes = {
     gamePrefs: PropTypes.shape({
         selectedDifficulty: PropTypes.string,
         selectedCategoryID: PropTypes.number,
         firstName: PropTypes.string
-    }),
-    startGameCallback: Function
+    })
 }
 
 export default Game;

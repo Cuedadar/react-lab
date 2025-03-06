@@ -1,6 +1,5 @@
 import {useState, useEffect, useRef} from "react";
 import styles from './GameSettings.module.css';
-import PropTypes from 'prop-types';
 import Constants from "../Constants.js";
 
 function GameSettings(props) {
@@ -114,11 +113,6 @@ function GameSettings(props) {
 }
 
 GameSettings.propTypes = {
-    gamePrefs: PropTypes.shape({
-        selectedDifficulty: PropTypes.string,
-        selectedCategoryID: PropTypes.number,
-        firstName: PropTypes.string
-    }),
     startGameCallback: Function
 }
 
