@@ -84,7 +84,7 @@ function GameSettings(props) {
                 <div className={styles.nameSection}>
                     <label htmlFor="firstName" className={styles.label}>First Name</label>
                     <input className={styles.nameInput} type="text" id="firstName" name="firstName"
-                           placeholder="Jane Doe" onChange={handleFirstNameChange}/>
+                           placeholder="Jessica" onChange={handleFirstNameChange}/>
 
                     {errors.firstNameError && (
                         <p className={styles.errorLabel}>Name is required</p>
