@@ -45,16 +45,19 @@ function Game(props) {
 
     function handleSubmit(event) {
         event.preventDefault();
+        let results = {
+            name: props.gamePrefs.firstName,
+            question: questionInfo.question,
+            correctAnswer: questionInfo.correctAnswer
+        }
 
         if (selectedAnswer === questionInfo.correctAnswer) {
-            props.gameResultsCallback({
-                isCorrect: true,
-                name: props.gamePrefs.firstName
+            props.gameResultsCallback({...results,
+                isCorrect: true
             });
         } else {
-            props.gameResultsCallback({
+            props.gameResultsCallback({...results,
                 isCorrect: false,
-                name: props.gamePrefs.firstName
             });
         }
     }

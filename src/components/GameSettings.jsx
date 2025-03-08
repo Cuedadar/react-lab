@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from "react";
 import styles from './GameSettings.module.css';
 import Constants from "../Constants.js";
+import Welcome from "./Welcome.jsx";
 
 function GameSettings(props) {
 
@@ -72,6 +73,7 @@ function GameSettings(props) {
     return (
 
         <>
+            <Welcome />
             {errors.fetchError && (
                 <button className={styles.buttonError} onClick={() => {
                     shouldFetchCategories.current = true;
