@@ -1,12 +1,14 @@
-# React + Vite
+# Module Lab: React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project demonstrates my understanding of react component composition, fetching data from an API, and event handlers.
 
-Currently, two official plugins are available:
+**A live version of the site can be found at [Netlify](https://jtking-trivia.netlify.app/)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This website is built on React and uses basic CSS styling to run a small, one-question trivia game with questions and categories
+pulled from the **[Open Trivia Database](https://opentdb.com/)** 
 
-## Expanding the ESLint configuration
+Project source and assets are in the "src" and "src\assets" folders respectively.
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+I would love to extend this to a fully featured web app and mobile at some time. This was great fun to make
+and extending this would be very simple. Throwing our own backend API in front of OTDB would make
+putting this across multiple front end clients simple.
